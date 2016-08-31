@@ -1,6 +1,6 @@
 <#assign className = table.className>
 <#assign classNameLower = className?uncap_first>
-package ${basePackage}.${moduleName}.vo;
+package ${basePackage}.${moduleName}.domain.vo;
 
 
 import ${basePackage}.${moduleName}.domain.entity.${className};

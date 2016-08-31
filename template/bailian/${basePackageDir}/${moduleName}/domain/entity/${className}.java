@@ -63,7 +63,7 @@ public class ${className} implements java.io.Serializable{
 			.isEquals();
 	}
 	
-	<#-- 输出BaseObject默认认方法-->
+	<#-- 输出BaseObject默认认方法
 	<#if (!table.contains('id'))>
 	<@generateSetGetMethod propertyName='id'  columnClass='java.util.Long' />
 	</#if>
@@ -82,6 +82,7 @@ public class ${className} implements java.io.Serializable{
 	<#if (!table.contains('enabled'))>
 	<@generateSetGetMethod propertyName='enabled'  columnClass='java.lang.String' />
 	</#if>
+	-->
 	
 }
 <#macro generateJavaColumns>
