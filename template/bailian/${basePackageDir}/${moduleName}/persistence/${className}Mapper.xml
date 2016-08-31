@@ -1,15 +1,23 @@
 <#assign className ="${table.className}">
 <#assign classNameLower = className?uncap_first>
 <#assign tableName="${table.tableName}" >
+<#assign utf8Encode="com.ibm.codegen.util.FtlUTF8EncodeMethod"?new()>
+<#assign getJdbcType="com.ibm.codegen.util.MyBatciGetJdbcTypeMethod"?new()>
+
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="${basePackage}.${moduleName}.persistence.${className}Mappper">
+<mapper namespace="${basePackage}.${moduleName}.persistence.${className}Mapper">
  	
  	<resultMap id="BaseResultMap" type="${basePackage}.${moduleName}.domain.entity.${className}">
  		<#list table.columns as column>
-	    <result column="${column.columnName}" property="${column.propertyName}" jdbcType="${column.columnType}" />
+	    <result column="${column.columnName}" property="${column.propertyName}" jdbcType="${getJdbcType(column.columnType)}" />
 	    </#list>
    </resultMap>
+   
+   <!-- base column list -->
+   <select id="BaseColumnList">
+		<#list table.columns as column>${column.columnName}<#if column_has_next>,</#if></#list>
+	</select>
    
    <!-- insert sql -->
    <insert id="insert" parameterType="${basePackage}.${moduleName}.domain.entity.${className}">
@@ -27,43 +35,44 @@
 	   <trim prefix="values (" suffix=")" suffixOverrides=",">
 	   <#list table.columns as column>
 			<if test="${column.propertyName} != null">
-				${r"#{"}${column.columnName} ,jdbcType=${column.columnType}}<#if column_has_next>,</#if>
+				${r"#{"}${column.propertyName} ,jdbcType=${getJdbcType(column.columnType)}}<#if column_has_next>,</#if>
 			</if>
 		</#list>
 		</trim>
 	</insert>
 	
-	<select id="selectByPrimaryKey" parameterType="java.util.Map" resultType="BaseResultMap">
-		select <#list table.columns as column>${column.columnName}<#if column_has_next>,</#if></#list> from ${tableName} t where sid = ${r"#{"} sid,jdbcType=VARCHAR}
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from ${tableName} t where sid = ${r"#{"} sid,jdbcType=VARCHAR}
 	</select>
 
-	<delete id="deleteByPrimaryKey" parameterType="java.util.Long">
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
 		delete from ${tableName} t where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
 	</delete>
 	
-	<update id="updateByPrimaryKey" parameterType="com.bailian.stock.param.domain.entity.AppParams" >
-	update ${tableName} t
-	<#list table.columns as column>
-	<if test="${column.propertyName} != null">
-	 t.${column.columnName} = ${r"#{"} ${column.columnName},jdbcType=${column.columnType}}<#if column_has_next>,</#if>
-	</if>
-	</#list>
-	where t.sid=${r"#{"} sid,jdbcType=DECIMAL}
-	</update>
-	
-	<select id=getByParams parameterType="java.util.Map" resultMap="BaseResultMap">
-		select <#list table.columns as column>${column.columnName},<#if column_has_next>,</#if></#list> from ${tableName} t 
-		where 
+	<update id="updateByPrimaryKey" parameterType="${basePackage}.${moduleName}.domain.entity.${className}" >
+	update ${tableName} t set 
 		<#list table.columns as column>
-		<#if column.pk>
-		<if test="sid != null">
-			sid = ${r"#{"}sid,jdbcType=DECIMAL}
-		</if>
+		<#if column.propertyName =="optCount">
+			t.OPT_COUNT = t.OPT_COUNT+1 <#if column_has_next>,</#if>
+		<#elseif column.propertyName =="lastUpatedTime">
+			t.LAST_UPDATED_TIME = sysdate <#if column_has_next>,</#if>
 		<#else>
 		<if test="${column.propertyName} != null">
-			and ${column.columnName}=${r"#{"}${column.columnName},jdbcType=${column.columnType}}<#if column_has_next>,</#if>
+		 t.${column.columnName} = ${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)}}<#if column_has_next>,</#if>
 		</if>
 		</#if>
+		</#list>
+	where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
+	</update>
+	
+	<select id="getByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from ${tableName} t 
+		where 1=1
+		<#list table.columns as column>
+		<#if column_index !=0 ></#if>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+		</if>
 		</#list>
 	</select>
 	
