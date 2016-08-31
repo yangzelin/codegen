@@ -1,11 +1,10 @@
 <#assign className = "${table.className}">
 <#assign classNameLower = className?uncap_first>
-package ${basePackage}.${moduleName}.dao;
+package ${basePackage}.${moduleName}.persistence;
 
-import ${basePackage}.${moduleName}.domain.entity.*;
-
-import com.bailian.stock.param.domain.entity.AppParams;
-import com.ibm.dao.hibernate.base.IBaseDao;
+import java.util.List;
+import java.util.Map;
+import ${basePackage}.${moduleName}.domain.entity.${className};
 
 /**
  * TODO(持久化类) Mapper层

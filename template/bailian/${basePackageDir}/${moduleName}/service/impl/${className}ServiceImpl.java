@@ -7,9 +7,12 @@ package ${basePackage}.${moduleName}.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import ${basePackage}.${moduleName}.domain.entity.${className};
-import ${basePackage}.${moduleName}.persistence.${className}Dao;
+import ${basePackage}.${moduleName}.persistence.${className}Mapper;
 import ${basePackage}.${moduleName}.service.${className}Service;
 
 /**
@@ -17,8 +20,8 @@ import ${basePackage}.${moduleName}.service.${className}Service;
  * @author by ibm core generator
  * @version 1.0.0
  */
-${className}
-public class ${className}ServiceImpl extends OperateManagerImp<${className}, Long> implements ${className}Service {
+@Service
+public class ${className}ServiceImpl implements ${className}Service {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	

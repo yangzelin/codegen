@@ -2,16 +2,17 @@
 <#assign classNameLower = className?uncap_first>
 package ${basePackage}.${moduleName}.service;
 
+import java.util.List;
+import java.util.Map;
+import ${basePackage}.${moduleName}.domain.entity.${className};
 
-import ${basePackage}.${moduleName}.model.${className};
 
-import com.ibm.service.IOperateManager;
 /**
- * TODO(服务类)
+ * TODO ${table.tableDesc}(服务类)
  * @author by ibm core generator
  * @version 1.0.0
  */
-public interface ${className}Service extends IOperateManager<${className}, Long>{
+public interface ${className}Service {
 
 	public Long insert(${className} ${classNameLower});
 	

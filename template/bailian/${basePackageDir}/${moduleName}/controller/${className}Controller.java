@@ -30,13 +30,10 @@ import com.bailian.core.utils.HttpUtil;
 import com.bailian.core.utils.JsonUtil;
 import com.bailian.core.utils.PropertyConfigurer;
 import com.bailian.core.utils.ResultUtil;
-import com.bailian.product.admin.controller.support.StockQueryPara;
-import com.bailian.product.stocks.domain.vo.StockQueryDTO;
-import com.bailian.product.stocks.domain.vo.StockQueryLabelDTO;
 
 
 @Controller
-@RequestMapping("/${className}Admin")
+@RequestMapping("/${classNameLower}Admin")
 public class ${className}Controller extends BaseController{
 
 	/**
