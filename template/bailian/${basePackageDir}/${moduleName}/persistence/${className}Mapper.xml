@@ -1,0 +1,70 @@
+<#assign className ="${table.className}">
+<#assign classNameLower = className?uncap_first>
+<#assign tableName="${table.tableName}" >
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="${basePackage}.${moduleName}.persistence.${className}Mappper">
+ 	
+ 	<resultMap id="BaseResultMap" type="${basePackage}.${moduleName}.domain.entity.${className}">
+ 		<#list table.columns as column>
+	    <result column="${column.columnName}" property="${column.propertyName}" jdbcType="${column.columnType}" />
+	    </#list>
+   </resultMap>
+   
+   <!-- insert sql -->
+   <insert id="insert" parameterType="${basePackage}.${moduleName}.domain.entity.${className}">
+	   <selectKey resultType="Long" keyProperty="sid" order="BEFORE" >
+	      select SEQ_${tableName}.NEXTVAL from dual
+	    </selectKey>
+		INSERT INTO ${tableName}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<#list table.columns as column>
+			<if test="${column.propertyName} != null">
+				${column.columnName}<#if column_has_next>,</#if>
+			</if>
+			</#list>
+		</trim>
+	   <trim prefix="values (" suffix=")" suffixOverrides=",">
+	   <#list table.columns as column>
+			<if test="${column.propertyName} != null">
+				${r"#{"}${column.columnName} ,jdbcType=${column.columnType}}<#if column_has_next>,</#if>
+			</if>
+		</#list>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" parameterType="java.util.Map" resultType="BaseResultMap">
+		select <#list table.columns as column>${column.columnName}<#if column_has_next>,</#if></#list> from ${tableName} t where sid = ${r"#{"} sid,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.util.Long">
+		delete from ${tableName} t where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
+	</delete>
+	
+	<update id="updateByPrimaryKey" parameterType="com.bailian.stock.param.domain.entity.AppParams" >
+	update ${tableName} t
+	<#list table.columns as column>
+	<if test="${column.propertyName} != null">
+	 t.${column.columnName} = ${r"#{"} ${column.columnName},jdbcType=${column.columnType}}<#if column_has_next>,</#if>
+	</if>
+	</#list>
+	where t.sid=${r"#{"} sid,jdbcType=DECIMAL}
+	</update>
+	
+	<select id=getByParams parameterType="java.util.Map" resultMap="BaseResultMap">
+		select <#list table.columns as column>${column.columnName},<#if column_has_next>,</#if></#list> from ${tableName} t 
+		where 
+		<#list table.columns as column>
+		<#if column.pk>
+		<if test="sid != null">
+			sid = ${r"#{"}sid,jdbcType=DECIMAL}
+		</if>
+		<#else>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.columnName},jdbcType=${column.columnType}}<#if column_has_next>,</#if>
+		</if>
+		</#if>
+		</#list>
+	</select>
+	
+</mapper>
