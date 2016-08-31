@@ -36,7 +36,7 @@ public class ${className}ServiceImpl implements ${className}Service {
 		this.${classNameLower}Mapper = ${classNameLower}Mapper;
 	}
 	
-	public Long insert(${className} ${classNameLower}){
+	public int insert(${className} ${classNameLower}){
 		return ${classNameLower}Mapper.insert(${classNameLower});
 	}
 	

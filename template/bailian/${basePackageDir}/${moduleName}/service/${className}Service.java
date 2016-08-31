@@ -14,7 +14,7 @@ import ${basePackage}.${moduleName}.domain.entity.${className};
  */
 public interface ${className}Service {
 
-	public Long insert(${className} ${classNameLower});
+	public int insert(${className} ${classNameLower});
 	
 	public ${className} selectByPrimaryKey(Long sid);
 	

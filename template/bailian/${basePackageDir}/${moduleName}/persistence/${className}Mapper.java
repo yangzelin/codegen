@@ -13,7 +13,7 @@ import ${basePackage}.${moduleName}.domain.entity.${className};
  */
 public interface ${className}Mapper{
 
-	public Long insert(${className} ${classNameLower});
+	public int insert(${className} ${classNameLower});
 	
 	public ${className} selectByPrimaryKey(Long sid);
 	
