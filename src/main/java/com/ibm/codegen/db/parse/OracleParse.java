@@ -25,6 +25,8 @@ public class OracleParse implements Parse {
 		try {
 			Map<String, String> columnCommentMap = getColumnComment(conn, tableName);
 			table.setTableName(tableName) ;
+			String tableDesc = getTableComments(conn,tableName);
+			table.setTableDesc(tableDesc);
 			ResultSet databaseMetaResultSet = getTableColumnResultSet(conn, tableName);
 			List<String> pkColumnNames = getPKColumnName(conn, tableName);
 			while(databaseMetaResultSet.next()){
@@ -37,7 +39,6 @@ public class OracleParse implements Parse {
 //					String tableName = md.getTableName(i);
 //					String columClazzName = md.getColumnClassName(i);
 					Object value = databaseMetaResultSet.getObject(i);
-					
 					
 					if("TABLE_SCHEM".equals(columnName)){
 						
@@ -125,6 +126,30 @@ public class OracleParse implements Parse {
 		}
 		
 		return map;
+	}
+	
+	public String getTableComments(Connection conn,String tableName){
+		String tableComments = "";
+		String sql = "SELECT TABLE_NAME,TABLE_TYPE,COMMENTS"+
+				"  FROM user_tab_comments t"+
+				" WHERE t.TABLE_NAME = '"+tableName.toUpperCase()+"'";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				tableComments = rs.getString("COMMENTS");
+				break;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			IOUtils.release(rs);
+			IOUtils.release(ps);
+		}
+		
+		return tableComments;
 	}
 	
 	public ResultSet getTableColumnResultSet(Connection conn,String tableName){
