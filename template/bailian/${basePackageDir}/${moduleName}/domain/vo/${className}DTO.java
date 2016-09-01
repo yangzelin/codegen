@@ -10,6 +10,6 @@ import ${basePackage}.${moduleName}.domain.entity.${className};
  * @author by turbo core generator
  * @version 1.0.0
  */
-public class ${className}Vo extends ${className}{
+public class ${className}DTO extends ${className}{
 
 }

@@ -167,6 +167,27 @@ public class OracleParse implements Parse {
 		}
 		return rs;
 	}
+	
+//	public String getTableComments2(Connection conn,String tableName){
+//		String tableCommenets = null;
+//		ResultSet rs = null;
+//		try {
+//			DatabaseMetaData databaseMetaData = conn.getMetaData();
+//			//获取主键
+//			rs = databaseMetaData.getTables(conn.getCatalog(), conn.getMetaData().getUserName().toUpperCase(), tableName.toUpperCase(),new String[]{"TABLE","REMARKS"});
+//			int columnSize = rs.getMetaData().getColumnCount();
+//			while(rs.next()){
+//				
+//				for(int i =1; i<=columnSize; i++)
+//				System.out.println(rs.getMetaData().getColumnName(i)+":"+rs.getString(i));
+//			}
+//		} catch (SQLException e) {
+//			throw new IllegalArgumentException("get table["+tableName+"]'s columns from connection:["+conn.toString()+"] error:["+e.getMessage()+"]");
+//		}finally{
+//			IOUtils.release(rs);
+//		}
+//		return tableCommenets;
+//	}
 
 	@Override
 	public List<String> getPKColumnName(Connection conn, String tableName) {

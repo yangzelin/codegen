@@ -76,4 +76,61 @@
 		</#list>
 	</select>
 	
+	<select id="selectByParam" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from ${tableName} t 
+		where 1=1
+		<#list table.columns as column>
+		<#if column_index !=0 ></#if>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+		</if>
+		</#list>
+	</select>
+	
+	<select id="getCountByParam" resultType="int" parameterType="java.util.Map">
+		select count(1) from ${tableName} t 
+		<where> 1=1
+		<#list table.columns as column>
+			<if test="${column.propertyName} != null">
+				and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+			</if>
+		</#list>
+		</where>
+	</select>
+	
+	<select id="selectPageListByParam" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * from (select a.*,rownum rn from (select <include refid="Base_Column_List" /> from ${tableName} t 
+		<where> 1=1
+		<#list table.columns as column>
+		<#if column_index !=0 ></#if>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+		</if>
+		<@generateDateConditon columnName='${column.columnName}' propertyName='${column.propertyName}' columnType='${column.columnType}' />
+		</#list>
+		</where>
+		) a) where rn between ${r"#{"}start} and ${r"#{"}end}
+	</select>
+	
 </mapper>
+
+<#macro generateColumnCondition >
+<#list table.columns as column>
+<#if column_index !=0 ></#if>
+<if test="${column.propertyName} != null">
+	and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+</if>
+<@generateDateConditon columnName='${column.columnName}' propertyName='${column.propertyName}' columnType='${column.columnType}' />
+</#list>
+</#macro>
+
+<#macro generateDateConditon columnName propertyName columnType>
+		<#if (columnType=="DATE" || columnType=="TIMESTAMP")>
+		<if test="${propertyName}Start != null">
+			and ${columnName} &lt;=${r"#{"}${propertyName}Start,jdbcType=${getJdbcType(columnType)} }
+		</if>
+		<if test="${propertyName}End != null">
+			and ${columnName} &gt;=${r"#{"}${propertyName}End,jdbcType=${getJdbcType(columnType)} }
+		</if>
+</#if>
+</#macro>

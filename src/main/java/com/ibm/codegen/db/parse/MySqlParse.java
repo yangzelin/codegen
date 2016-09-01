@@ -80,6 +80,7 @@ public class MySqlParse implements Parse {
 		} catch (SQLException e) {
 			throw new IllegalArgumentException("parse Table:["+tableName+"] error:"+e.getMessage());
 		}
+
 		
 		return table;
 	}
@@ -98,6 +99,8 @@ public class MySqlParse implements Parse {
 			}
 		} catch (SQLException e) {
 			throw new IllegalArgumentException("get table["+tableName+"]'s columns from connection:["+conn.toString()+"] error:["+e.getMessage()+"]");
+		}finally{
+			IOUtils.close(rs);
 		}
 		return pkColumnNames;
 	}
@@ -123,8 +126,6 @@ public class MySqlParse implements Parse {
 			IOUtils.release(rs);
 			IOUtils.release(ps);
 		}
-		
-		
 		
 		return map;
 	}
