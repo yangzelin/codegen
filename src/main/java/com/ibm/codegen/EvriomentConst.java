@@ -12,6 +12,8 @@ public class EvriomentConst {
 	public static final String basePackageDir = "basePackageDir";
 	//工程模块
 	public static final String moduleName = "moduleName";
+	//模块下功能名称
+	public static final String functionName = "functionName";
 	
 	//表明前缀，生成代码是去掉,多个用";"分割
 	public static final String tablePreFix = "tablePrefix";
@@ -32,6 +34,8 @@ public class EvriomentConst {
 	public static final String jdbcUserName = "jdbc.username";
 	public static final String jdbcPassword = "jdbc.password";
 	public static final String jdbcSchema = "jdbc.schema";
+	
+	
 	
 	
 	//数据库类和Java类型映射Map

@@ -178,6 +178,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 					param.put("basePackage", EventMap.getValue(EvriomentConst.basePackage));
 					param.put("moduleName", EventMap.getValue(EvriomentConst.moduleName));
 					param.put("className", table.getClassName());
+					param.put("functionName", table.getClassName().toLowerCase());
 					param.put("table", table);
 					
 					FreemarkerCodeGenerator  freemarkGen = new FreemarkerCodeGenerator();
