@@ -25,7 +25,7 @@ import ${basePackage}.${moduleName}.${functionName}.service.${className}Service;
 
 /**
  * TODO ${table.tableDesc?if_exists}(服务层实现类)
- * @author by ibm core generator
+ * @author by turbo core generator
  * @version 1.0.0
  */
 @Service

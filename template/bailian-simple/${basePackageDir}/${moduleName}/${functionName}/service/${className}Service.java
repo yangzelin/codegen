@@ -13,7 +13,7 @@ import ${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO;
 
 /**
  * TODO ${table.tableDesc?if_exists}(服务类)
- * @author by ibm core generator
+ * @author by turbo core generator
  * @version 1.0.0
  */
 public interface ${className}Service {
