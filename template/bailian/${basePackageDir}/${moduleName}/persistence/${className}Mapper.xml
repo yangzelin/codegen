@@ -27,16 +27,24 @@
 		INSERT INTO ${tableName}
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<#list table.columns as column>
-			<if test="${column.propertyName} != null">
+			<#if (column.propertyName !="createdTime" && column.propertyName != "lastUpdatedTime")>
+				<if test="${column.propertyName} != null">
+					${column.columnName}<#if column_has_next>,</#if>
+				</if>
+			<#else>
 				${column.columnName}<#if column_has_next>,</#if>
-			</if>
+			</#if>
 			</#list>
 		</trim>
 	   <trim prefix="values (" suffix=")" suffixOverrides=",">
 	   <#list table.columns as column>
+	   	<#if (column.propertyName !="createdTime" && column.propertyName != "lastUpdatedTime")>
 			<if test="${column.propertyName} != null">
 				${r"#{"}${column.propertyName} ,jdbcType=${getJdbcType(column.columnType)}}<#if column_has_next>,</#if>
 			</if>
+		<#else>
+				sysdate<#if column_has_next>,</#if>
+		</#if>
 		</#list>
 		</trim>
 	</insert>

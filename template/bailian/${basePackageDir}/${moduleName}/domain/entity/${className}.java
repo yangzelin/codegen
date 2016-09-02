@@ -109,12 +109,11 @@ public class ${className} implements java.io.Serializable{
 <#macro generateSetGetMethod propertyName columnClass>
 <#assign propertyNameUpper = propertyName?cap_first>
 	public void set${propertyNameUpper}(${columnClass} ${propertyName}) {
-		
+		this.${propertyName} = ${propertyName};
 	}
 	
-	@Transient
 	public ${columnClass} get${propertyNameUpper}() {
-		return null;
+		return this.${propertyName};
 	}
 	
 </#macro>
