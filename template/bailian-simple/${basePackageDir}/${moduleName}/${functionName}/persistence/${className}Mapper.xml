@@ -1,0 +1,144 @@
+<#assign className ="${table.className}">
+<#assign classNameLower = className?uncap_first>
+<#assign tableName="${table.tableName}" >
+<#assign utf8Encode="com.ibm.codegen.util.FtlUTF8EncodeMethod"?new()>
+<#assign getJdbcType="com.ibm.codegen.util.MyBatciGetJdbcTypeMethod"?new()>
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="${basePackage}.${moduleName}.${functionName}.persistence.${className}Mapper">
+ 	
+ 	<resultMap id="BaseResultMap" type="${basePackage}.${moduleName}.${functionName}.domain.entity.${className}">
+ 		<#list table.columns as column>
+	    <result column="${column.columnName}" property="${column.propertyName}" jdbcType="${getJdbcType(column.columnType)}" />
+	    </#list>
+   </resultMap>
+   
+   <!-- base column list -->
+   <select id="BaseColumnList">
+		<#list table.columns as column>${column.columnName}<#if column_has_next>,</#if></#list>
+	</select>
+   
+   <!-- insert sql -->
+   <insert id="insert" parameterType="${basePackage}.${moduleName}.${functionName}.domain.entity.${className}">
+	   <selectKey resultType="Long" keyProperty="sid" order="BEFORE" >
+	      select SEQ_${tableName}.NEXTVAL from dual
+	    </selectKey>
+		INSERT INTO ${tableName}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<#list table.columns as column>
+			<#if (column.propertyName !="createdTime" && column.propertyName != "lastUpdatedTime")>
+				<if test="${column.propertyName} != null">
+					${column.columnName}<#if column_has_next>,</#if>
+				</if>
+			<#else>
+				${column.columnName}<#if column_has_next>,</#if>
+			</#if>
+			</#list>
+		</trim>
+	   <trim prefix="values (" suffix=")" suffixOverrides=",">
+	   <#list table.columns as column>
+	   	<#if (column.propertyName !="createdTime" && column.propertyName != "lastUpdatedTime")>
+			<if test="${column.propertyName} != null">
+				${r"#{"}${column.propertyName} ,jdbcType=${getJdbcType(column.columnType)}}<#if column_has_next>,</#if>
+			</if>
+		<#else>
+				sysdate<#if column_has_next>,</#if>
+		</#if>
+		</#list>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from ${tableName} t where sid = ${r"#{"} sid,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from ${tableName} t where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
+	</delete>
+	
+	<update id="updateByPrimaryKey" parameterType="${basePackage}.${moduleName}.${functionName}.domain.entity.${className}" >
+	update ${tableName} t set 
+		<#list table.columns as column>
+		<#if column.propertyName =="optCount">
+			t.OPT_COUNT = t.OPT_COUNT+1 <#if column_has_next>,</#if>
+		<#elseif column.propertyName =="lastUpatedTime">
+			t.LAST_UPDATED_TIME = sysdate <#if column_has_next>,</#if>
+		<#else>
+		<if test="${column.propertyName} != null">
+		 t.${column.columnName} = ${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)}}<#if column_has_next>,</#if>
+		</if>
+		</#if>
+		</#list>
+	where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
+	</update>
+	
+	<select id="getByParams" parameterType="${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from ${tableName} t 
+		where 1=1
+		<#list table.columns as column>
+		<#if column_index !=0 ></#if>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+		</if>
+		</#list>
+	</select>
+	
+	<select id="selectByParam" parameterType="${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from ${tableName} t 
+		where 1=1
+		<#list table.columns as column>
+		<#if column_index !=0 ></#if>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+		</if>
+		</#list>
+	</select>
+	
+	<select id="getCountByParam" resultType="int" parameterType="${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO">
+		select count(1) from ${tableName} t 
+		<where> 1=1
+		<#list table.columns as column>
+			<if test="${column.propertyName} != null">
+				and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+			</if>
+		</#list>
+		</where>
+	</select>
+	
+	<select id="selectPageListByParam" parameterType="${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO" resultMap="BaseResultMap">
+		select * from (select a.*,rownum rn from (select <include refid="Base_Column_List" /> from ${tableName} t 
+		<where> 1=1
+		<#list table.columns as column>
+		<#if column_index !=0 ></#if>
+		<if test="${column.propertyName} != null">
+			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+		</if>
+		<@generateDateConditon columnName='${column.columnName}' propertyName='${column.propertyName}' columnType='${column.columnType}' />
+		</#list>
+		</where>
+		) a) where rn between ${r"#{"}start} and ${r"#{"}end}
+	</select>
+	
+</mapper>
+
+<#macro generateColumnCondition >
+<#list table.columns as column>
+<#if column_index !=0 ></#if>
+<if test="${column.propertyName} != null">
+	and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
+</if>
+<@generateDateConditon columnName='${column.columnName}' propertyName='${column.propertyName}' columnType='${column.columnType}' />
+</#list>
+</#macro>
+
+<#macro generateDateConditon columnName propertyName columnType>
+		<#if (columnType=="DATE" || columnType=="TIMESTAMP")>
+		<if test="${propertyName}Start != null">
+			and ${columnName} &lt;=${r"#{"}${propertyName}Start,jdbcType=${getJdbcType(columnType)} }
+		</if>
+		<if test="${propertyName}End != null">
+			and ${columnName} &gt;=${r"#{"}${propertyName}End,jdbcType=${getJdbcType(columnType)} }
+		</if>
+</#if>
+</#macro>

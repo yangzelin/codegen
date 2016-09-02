@@ -1,6 +1,6 @@
 <#assign className ="${table.className}">
 <#assign classNameLower = className?uncap_first>
-package ${basePackage}.${moduleName}.domain.entity;
+package ${basePackage}.${moduleName}.${functionName}.domain.entity;
 
 
 
@@ -12,7 +12,10 @@ import java.math.BigDecimal;
  * @version 1.0.0
  */
 public class ${className} implements java.io.Serializable{
-	
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	<#list table.columns as column>
 	<#if column.pk>
     /** ${column.propertyName} - ${column.columnComment?if_exists} */
