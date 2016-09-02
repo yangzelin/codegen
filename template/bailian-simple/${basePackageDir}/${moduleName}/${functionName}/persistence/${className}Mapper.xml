@@ -14,9 +14,9 @@
    </resultMap>
    
    <!-- base column list -->
-   <select id="BaseColumnList">
+   <sql id="Base_Column_List">
 		<#list table.columns as column>${column.columnName}<#if column_has_next>,</#if></#list>
-	</select>
+	</sql>
    
    <!-- insert sql -->
    <insert id="insert" parameterType="${basePackage}.${moduleName}.${functionName}.domain.entity.${className}">
@@ -61,7 +61,7 @@
 		<#list table.columns as column>
 		<#if column.propertyName =="optCount">
 			t.OPT_COUNT = t.OPT_COUNT+1 <#if column_has_next>,</#if>
-		<#elseif column.propertyName =="lastUpatedTime">
+		<#elseif column.propertyName =="lastUpdatedTime">
 			t.LAST_UPDATED_TIME = sysdate <#if column_has_next>,</#if>
 		<#else>
 		<if test="${column.propertyName} != null">
@@ -72,19 +72,8 @@
 	where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
 	</update>
 	
-	<select id="getByParams" parameterType="${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO" resultMap="BaseResultMap">
-		select <include refid="Base_Column_List" /> from ${tableName} t 
-		where 1=1
-		<#list table.columns as column>
-		<#if column_index !=0 ></#if>
-		<if test="${column.propertyName} != null">
-			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
-		</if>
-		</#list>
-	</select>
-	
 	<select id="selectByParam" parameterType="${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO" resultMap="BaseResultMap">
-		select <include refid="Base_Column_List" /> from ${tableName} t 
+		select <include refid="BASE_COLUMN_LIST" /> from ${tableName} t 
 		where 1=1
 		<#list table.columns as column>
 		<#if column_index !=0 ></#if>

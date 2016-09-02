@@ -3,7 +3,6 @@
 <#assign tableName="${table.tableName}" >
 <#assign utf8Encode="com.ibm.codegen.util.FtlUTF8EncodeMethod"?new()>
 <#assign getJdbcType="com.ibm.codegen.util.MyBatciGetJdbcTypeMethod"?new()>
-
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="${basePackage}.${moduleName}.persistence.${className}Mapper">
@@ -15,9 +14,9 @@
    </resultMap>
    
    <!-- base column list -->
-   <select id="BaseColumnList">
+   <sql id="Base_Column_List">
 		<#list table.columns as column>${column.columnName}<#if column_has_next>,</#if></#list>
-	</select>
+	</sql>
    
    <!-- insert sql -->
    <insert id="insert" parameterType="${basePackage}.${moduleName}.domain.entity.${className}">
@@ -62,7 +61,7 @@
 		<#list table.columns as column>
 		<#if column.propertyName =="optCount">
 			t.OPT_COUNT = t.OPT_COUNT+1 <#if column_has_next>,</#if>
-		<#elseif column.propertyName =="lastUpatedTime">
+		<#elseif column.propertyName =="lastUppatedTime">
 			t.LAST_UPDATED_TIME = sysdate <#if column_has_next>,</#if>
 		<#else>
 		<if test="${column.propertyName} != null">
@@ -72,17 +71,6 @@
 		</#list>
 	where t.sid=${r"#{"}sid,jdbcType=DECIMAL}
 	</update>
-	
-	<select id="getByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
-		select <include refid="Base_Column_List" /> from ${tableName} t 
-		where 1=1
-		<#list table.columns as column>
-		<#if column_index !=0 ></#if>
-		<if test="${column.propertyName} != null">
-			and ${column.columnName}=${r"#{"}${column.propertyName},jdbcType=${getJdbcType(column.columnType)} }
-		</if>
-		</#list>
-	</select>
 	
 	<select id="selectByParam" parameterType="java.util.Map" resultMap="BaseResultMap">
 		select <include refid="Base_Column_List" /> from ${tableName} t 
