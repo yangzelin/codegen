@@ -3,7 +3,6 @@
 package ${basePackage}.${moduleName}.${functionName}.service;
 
 import java.util.List;
-import java.util.Map;
 
 import com.bailian.core.framework.base.page.Page;
 
@@ -29,5 +28,5 @@ public interface ${className}Service {
 	
 	public List<${className}> selectByParam(${className}DTO params);
 	
-	public Page<${className}> selectPageListByParam(Map<String,Object> paramMap, Page<${className}> page);
+	public Page<${className}> selectPageListByParam(${className}DTO params, Page<${className}> page);
 }
