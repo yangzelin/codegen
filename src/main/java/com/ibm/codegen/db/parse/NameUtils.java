@@ -13,6 +13,8 @@ import com.ibm.codegen.util.IOUtils;
 
 public class NameUtils {
 	public static Map<String, String> tableNamePrefixMap = new HashMap<String, String>();
+	
+	private static boolean skipModuleName = false;
 	static{
 		tableNamePrefixMap.put("T_","");
 		tableNamePrefixMap.put("TB_","");
@@ -51,7 +53,12 @@ public class NameUtils {
 		String subTableName = tableName.toUpperCase();
 		//最多替换第二个下换线 如T_SYS_USER
 		if(tableName.indexOf("_", tableName.indexOf("_")+1)>0){
-			subTableName = subTableName.substring(tableName.indexOf("_", tableName.indexOf("_")+1));
+			if(skipModuleName){
+				subTableName = subTableName.substring(tableName.indexOf("_", tableName.indexOf("_")+1));
+			}else{
+				subTableName = subTableName.substring(tableName.indexOf("_")+1);
+			}
+			
 		//表明结构是 T_USER
 		}else if(tableName.indexOf("_")>0){
 			subTableName = subTableName.substring(tableName.indexOf("_")+1);

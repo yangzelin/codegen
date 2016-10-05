@@ -103,7 +103,7 @@ public class SQLServerParse implements Parse {
 				||columnTypeName.toUpperCase().startsWith("BIT")
 				||columnTypeName.toUpperCase().startsWith("SMALLINT")
 				||columnTypeName.toUpperCase().startsWith("TINYINT")){
-			javaType = Long.class.getName();
+			javaType = Integer.class.getName();
 		}else if(columnTypeName.toUpperCase().startsWith("FLOAT")){
 			javaType = Float.class.getName();
 		}else if(columnTypeName.toUpperCase().startsWith("DECIMAL")){
