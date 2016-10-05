@@ -9,6 +9,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import com.ibm.codegen.db.parse.MySqlParse;
 import com.ibm.codegen.db.parse.OracleParse;
 import com.ibm.codegen.db.parse.Parse;
+import com.ibm.codegen.db.parse.SQLServer2008Parse;
 
 
 public class DBSetting {
@@ -24,6 +25,7 @@ public class DBSetting {
 	public static String encode = "UTF-8";
 	public static String oracleDriverName = "oracle.jdbc.driver.OracleDriver";
 	public static String mysqlDriverName = "com.mysql.jdbc.Driver";
+	public static String sqlServerDriverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	public static String driverClassName = oracleDriverName;
 	public static int connectionMaxActive = 100;
 	public static int connectionMaxWait = 1000;
@@ -32,7 +34,10 @@ public class DBSetting {
 	
 	public static String oraclePrefix = "jdbc:oracle:thin:@";
 	public static String mysqlPrefix = "jdbc:mysql:";
+	public static String sqlServerPrefix = "jdbc:sqlserver://";
+	
 	public static String oracleSeperator = ":";
+	public static String sqlServerSeperator = ";";
 	
 	public static String LogPath = "";
 	public static OutputStreamWriter logWriter;
@@ -42,6 +47,8 @@ public class DBSetting {
 		BasicDataSource dataSource = new BasicDataSource();
 		if(dbUrl.indexOf("mysql") > 0){
 			driverClassName = mysqlDriverName;
+		}else if(dbUrl.indexOf("sqlserver") > 0){
+			driverClassName = sqlServerDriverName;
 		}
 		dataSource.setDriverClassName(driverClassName);
 		dataSource.setUrl(dbUrl);
@@ -63,10 +70,17 @@ public class DBSetting {
 		String url = mysqlPrefix+host+oracleSeperator+port+oracleSeperator+ dbName;
 		return url;
 	}
+	// jdbc:sqlserver://localhost:1433;DatabaseName=charts
+	public static String buildSQLServerURL(String host,int port, String dbName){
+		String url = sqlServerPrefix+host+oracleSeperator+port+sqlServerSeperator+"DatabaseName="+ dbName;
+		return url;
+	}
 	public static Parse getParse(String dbUrl){
 		Parse parse = new OracleParse();
 		if(dbUrl.toLowerCase().startsWith(mysqlPrefix)){
 			parse = new MySqlParse();
+		}else if(dbUrl.toLowerCase().startsWith(sqlServerPrefix)){
+			parse = new SQLServer2008Parse();
 		}
 		return parse;
 	}
