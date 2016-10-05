@@ -17,7 +17,7 @@ import com.ibm.codegen.db.def.Column;
 import com.ibm.codegen.db.def.Table;
 import com.ibm.codegen.util.IOUtils;
 
-public class SQLServer2008Parse implements Parse {
+public class SQLServerParse implements Parse {
 
 	@Override
 	public Table parseTable(Connection conn, String tableName) {
@@ -25,6 +25,8 @@ public class SQLServer2008Parse implements Parse {
 		try {
 			Map<String, String> columnCommentMap = getColumnComment(conn, tableName);
 			table.setTableName(tableName) ;
+			String tableDesc = getTableComments(conn,tableName);
+			table.setTableDesc(tableDesc);
 			ResultSet databaseMetaResultSet = getTableColumnResultSet(conn, tableName);
 			List<String> pkColumnNames = getPKColumnName(conn, tableName);
 			while(databaseMetaResultSet.next()){
@@ -37,7 +39,7 @@ public class SQLServer2008Parse implements Parse {
 //					String tableName = md.getTableName(i);
 //					String columClazzName = md.getColumnClassName(i);
 					Object value = databaseMetaResultSet.getObject(i);
-					
+//					System.out.println(columnName+":"+value);
 					
 					if("TABLE_SCHEM".equals(columnName)){
 						
@@ -52,7 +54,7 @@ public class SQLServer2008Parse implements Parse {
 					}else if("TYPE_NAME".equals(columnName)){
 						column.setColumnType(value.toString());
 					}else if("COLUMN_SIZE".equals(columnName)){
-						column.setColumnSize((BigDecimal) value);
+						column.setColumnSize(new BigDecimal(value.toString()));
 					}
 					
 //					column.setColumnClass(columClazzName);
@@ -124,11 +126,16 @@ public class SQLServer2008Parse implements Parse {
 	
 	public Map<String,String> getColumnComment(Connection conn,String tableName){
 		Map<String,String> map = new HashMap<String, String>();
-		String sql = "SELECT t1.COLUMN_NAME, t2.COMMENTS"+
-		"  FROM user_tab_columns t1, user_col_comments t2"+
-		" WHERE t1.TABLE_NAME = '"+tableName.toUpperCase()+"'"+
-		"   AND t1.TABLE_NAME = t2.TABLE_NAME"+
-		"   AND t1.COLUMN_NAME = t2.COLUMN_NAME";
+		String sql = "SELECT "+
+		"  a.column_id AS No, "+
+		"  a.name AS COLUMN_NAME, "+
+		"  cast(isnull(g.[value],'-') as varchar(1000)) AS COMMENTS "+
+		"FROM "+
+		"  sys.columns a left join sys.extended_properties g "+
+		" on (a.object_id = g.major_id AND g.minor_id = a.column_id) "+
+		"WHERE "+
+		"  object_id = "+
+		"    (SELECT object_id FROM sys.tables WHERE name = '"+tableName.toUpperCase()+"')";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -171,7 +178,7 @@ public class SQLServer2008Parse implements Parse {
 		String pkColumnName ="";
 		String pkConstraintName = "";
 		tableName = tableName != null ? tableName.trim().toUpperCase() : "";
-		String sql = "select t.owner,t.constraint_name,t.column_name  from user_cons_columns t where constraint_name = (select constraint_name from user_constraints where table_name = '"+tableName+"' and constraint_type = 'P')";
+		String sql = "SELECT TABLE_NAME, COLUMN_NAME,CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='"+tableName.toUpperCase()+"'";
 		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -190,6 +197,36 @@ public class SQLServer2008Parse implements Parse {
 			IOUtils.release(ps);
 		}
 		return pkColumnNames;
+	}
+
+	@Override
+	public String getTableComments(Connection conn, String tableName) {
+		String tableComments = "";
+		String sql = "select top 1000  "+
+		"  ROW_NUMBER() OVER (ORDER BY a.object_id) AS No,   "+
+		"  a.name AS TABLE_NAME,  "+
+		"  cast(isnull(g.[value],'-') as varchar(1000)) AS COMMENTS "+
+		"from  "+
+		"  sys.tables a left join sys.extended_properties g  "+
+		"  on (a.object_id = g.major_id AND g.minor_id = 0) "+
+		"  where a.name = '"+tableName.toUpperCase()+"'";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				tableComments = rs.getString("COMMENTS");
+				break;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			IOUtils.release(rs);
+			IOUtils.release(ps);
+		}
+		
+		return tableComments;
 	}
 
 }

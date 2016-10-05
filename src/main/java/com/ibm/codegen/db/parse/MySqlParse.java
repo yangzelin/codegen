@@ -159,4 +159,10 @@ public class MySqlParse implements Parse {
 		return javaType;
 	}
 
+	@Override
+	public String getTableComments(Connection conn, String tableName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

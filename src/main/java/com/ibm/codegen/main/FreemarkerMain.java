@@ -25,6 +25,7 @@ public class FreemarkerMain {
 		//加载数据
 		// oracel 驱动路径：jdbc:oracle:thin:zelinyang:orcl";
 		// mysql  驱动路径：jdbc:mysql://zelinyang:3306/invest
+		// sqlserver  驱动路径：jdbc:sqlserver://localhost:1433;DatabaseName=charts
 		String dbUrl=EventMap.getValue(EvriomentConst.jdbcUrl,"jdbc:oracle:thin:zelinyang:orcl");
 		String dbUserName=EventMap.getValue(EvriomentConst.jdbcUserName,"dev_opt");
 		String dbPassword=EventMap.getValue(EvriomentConst.jdbcPassword,"dev_opt");

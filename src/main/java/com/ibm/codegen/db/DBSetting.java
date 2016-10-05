@@ -9,7 +9,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import com.ibm.codegen.db.parse.MySqlParse;
 import com.ibm.codegen.db.parse.OracleParse;
 import com.ibm.codegen.db.parse.Parse;
-import com.ibm.codegen.db.parse.SQLServer2008Parse;
+import com.ibm.codegen.db.parse.SQLServerParse;
 
 
 public class DBSetting {
@@ -80,7 +80,7 @@ public class DBSetting {
 		if(dbUrl.toLowerCase().startsWith(mysqlPrefix)){
 			parse = new MySqlParse();
 		}else if(dbUrl.toLowerCase().startsWith(sqlServerPrefix)){
-			parse = new SQLServer2008Parse();
+			parse = new SQLServerParse();
 		}
 		return parse;
 	}

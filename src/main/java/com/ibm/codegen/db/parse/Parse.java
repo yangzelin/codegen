@@ -53,6 +53,19 @@ public interface Parse {
 	
 	/**
 	 * 
+	 * <p>
+	 * Description:根据表名获取 表名备注
+	 * </p>
+	 * @param conn
+	 * @param tableName
+	 * @return
+	 * @auhtor Administrator
+	 * @date 2016年10月5日
+	 */
+	public String getTableComments(Connection conn, String tableName);
+	
+	/**
+	 * 
 	 * <p>Description: 获取表的全部字段结果集 <p>
 	 * @param conn
 	 * @param tableName
