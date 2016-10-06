@@ -108,6 +108,8 @@ public class SQLServerParse implements Parse {
 			javaType = Float.class.getName();
 		}else if(columnTypeName.toUpperCase().startsWith("DECIMAL")){
 			javaType = BigDecimal.class.getName();
+		}else if(columnTypeName.toUpperCase().startsWith("BIGINT")){
+			javaType = Long.class.getName();
 		}else if(columnTypeName.toUpperCase().startsWith("NUMBER")){
 			javaType = Long.class.getName();
 		}else if(columnTypeName.toUpperCase().startsWith("DATE")
