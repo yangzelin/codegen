@@ -1,4 +1,4 @@
-﻿package com.ibm.codegen.util;
+package com.ibm.codegen.util;
 
 import java.io.BufferedReader;
 import java.io.File;
