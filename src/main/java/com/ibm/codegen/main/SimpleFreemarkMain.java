@@ -47,9 +47,9 @@ public class SimpleFreemarkMain {
 	}
 	
 	private static String getClassName(String str){
-		String className = TrimToArrayUtlils.trimToEmpty(str);
-		if(!TrimToArrayUtlils.isEmpty(className)){
-			String[] ary = className.split("_");
+		String className = "";
+		if(!TrimToArrayUtlils.isEmpty(str)){
+			String[] ary = str.split("_");
 			for(int i =0 ; i < ary.length; i++){
 				String s = ary[i];
 				if(i == 0){
