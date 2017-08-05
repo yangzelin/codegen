@@ -20,8 +20,8 @@ import ${basePackage}.${moduleName}.domain.*;
 @Repository
 public interface ${className}Repository extends JpaRepository<${className}, Long>  {
 
-	@Query("select t from ${className} t order by t.weekBegin desc, t.week desc")
-	public Page<${className}> getTop(Pageable pageable);
+	//@Query("select t from ${className} t order by t.id desc")
+	//public Page<${className}> getTop(Pageable pageable);
 	
 }
 

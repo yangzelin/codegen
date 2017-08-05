@@ -15,12 +15,12 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.*;
 
-import cn.lightjob.charts.common.cons.Global;
+import cn.lightjob.charts.common.Global;
 
 import java.math.BigDecimal;
 
 /**
- * ${table.tableDesc} 实体类
+ *  ${table.tableDesc} 实体类
  * @ClassName: ${table.tableName}
  * @Description: 
  * @author yangzelin
@@ -44,7 +44,7 @@ public class ${className}  implements java.io.Serializable{
     @Id
     @Column(name = "${column.columnName}")
     @GeneratedValue(strategy = GenerationType.TABLE,generator="idGen")
-    @TableGenerator(name="idGen",table="SYS_ID",pkColumnName="key_id",valueColumnName="key_value",pkColumnValue="${table.tableName}_ID")
+    @TableGenerator(name="idGen",schema=Global.DATABASE_CHART_USER_SCHEMA,table="SYS_ID",pkColumnName="key_id",valueColumnName="key_value",pkColumnValue="${table.tableName}_ID")
     private ${column.columnClass} ${column.propertyName};
     <#else>
     /** ${column.propertyName} - ${column.columnComment?if_exists} */
