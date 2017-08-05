@@ -19,6 +19,13 @@ import cn.lightjob.charts.common.cons.Global;
 
 import java.math.BigDecimal;
 
+/**
+ * ${table.tableDesc} 实体类
+ * @ClassName: ${table.tableName}
+ * @Description: 
+ * @author yangzelin
+ * @date 2017年8月5日 下午10:02:06
+ */
 @Entity
 @Table(schema=Global.DATABASE_CHART_USER_SCHEMA , name="${table.tableName}")
 public class ${className}  implements java.io.Serializable{
