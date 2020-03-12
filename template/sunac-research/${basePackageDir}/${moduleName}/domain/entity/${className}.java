@@ -26,7 +26,7 @@ import lombok.EqualsAndHashCode;
 public class ${className} extends BaseEntity {
 
 	<#list table.columns as column>
-	<#if !column.isCommonColumn>
+	<#if !column.isCommonColumn ??>
 	<#if column.pk>
 	/** ${column.columnComment?if_exists}  使用接口IdentifierGenerator的方法nextId(默认实现类为 DefaultIdentifierGenerator 雪花算法)**/
 	@TableId(value = "${column.columnName}", type = IdType.ASSIGN_ID)
