@@ -21,21 +21,23 @@ import lombok.EqualsAndHashCode;
  **/
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("${table.tableName}")
+@TableName("${table.tableName?lower_case}")
 @ApiModel(value = "${className}对象", description = "${className}对象")
 public class ${className} extends BaseEntity {
 
 	<#list table.columns as column>
-	<#if !column.isCommonColumn ??>
+	<#if column.commonColumn == false>
 	<#if column.pk>
 	/** ${column.columnComment?if_exists}  使用接口IdentifierGenerator的方法nextId(默认实现类为 DefaultIdentifierGenerator 雪花算法)**/
-	@TableId(value = "${column.columnName}", type = IdType.ASSIGN_ID)
+	@TableId(value = "${column.columnName?lower_case}", type = IdType.ASSIGN_ID)
     private ${column.columnClass} ${column.propertyName};
+
     <#else>
 	/** ${column.columnComment?if_exists}**/
 	@ApiModelProperty(value = "${column.columnComment?if_exists}")
-	@TableField("${column.columnName}")
+	@TableField("${column.columnName?lower_case}")
 	private  ${column.columnClass} ${column.propertyName};
+
     </#if>
 	</#if>
     </#list>

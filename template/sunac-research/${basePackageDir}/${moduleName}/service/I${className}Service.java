@@ -3,7 +3,7 @@
 package ${basePackage}.${moduleName}.service;
 
 import com.ibm.ms.research.admin.common.service.BaseService;
-import ${basePackage}.${moduleName}.domain.entity.Question;
+import ${basePackage}.${moduleName}.domain.entity.${className};
 
 /**
  * <p>

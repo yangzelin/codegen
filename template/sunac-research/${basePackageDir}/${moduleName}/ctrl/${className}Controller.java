@@ -19,11 +19,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import ${basePackage}.${moduleName}.${functionName}.domain.entity.${className};
-import ${basePackage}.${moduleName}.${functionName}.domain.vo.${className}DTO;
-import ${basePackage}.${moduleName}.${functionName}.domain.dto.${className}DTO;
-import ${basePackage}.${moduleName}.${functionName}.service.I${className}Service;
-import ${basePackage}.${moduleName}.${functionName}.wapper.I${className}Wrapper;
+import ${basePackage}.${moduleName}.domain.entity.${className};
+import ${basePackage}.${moduleName}.domain.vo.${className}DTO;
+import ${basePackage}.${moduleName}.domain.dto.${className}DTO;
+import ${basePackage}.${moduleName}.service.I${className}Service;
+import ${basePackage}.${moduleName}.wapper.I${className}Wrapper;
 
 
 /**
