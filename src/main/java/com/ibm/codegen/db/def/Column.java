@@ -12,6 +12,7 @@ public class Column {
 	private String columnClass;// 数据库字段映射Java对象java.math.BigDecimal md.getColumnClassName();
 	private String columnComment; //字段注释
 	private boolean pk = false;//是否主键字段
+	private boolean isCommonColumn = false;// 是否公共字段
 	
 	public boolean isPk() {
 		return pk;
@@ -79,5 +80,12 @@ public class Column {
 		String propertyName = getPropertyName();
 		return propertyName.substring(0,1).toUpperCase()+propertyName.substring(1);
 	}
-	
+
+	public boolean isCommonColumn() {
+		return isCommonColumn;
+	}
+
+	public void setCommonColumn(boolean commonColumn) {
+		isCommonColumn = commonColumn;
+	}
 }

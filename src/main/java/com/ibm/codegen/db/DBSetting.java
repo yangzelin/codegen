@@ -27,7 +27,7 @@ public class DBSetting {
 	public static String mysqlDriverName = "com.mysql.jdbc.Driver";
 	public static String sqlServerDriverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	public static String driverClassName = oracleDriverName;
-	public static int connectionMaxActive = 100;
+	public static int connectionMaxActive = 5;
 	public static int connectionMaxWait = 1000;
 	public static boolean poolPreparedStatements = true;
 	public static boolean defaultAutoCommit = true;

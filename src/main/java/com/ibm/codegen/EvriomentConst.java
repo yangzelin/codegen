@@ -26,6 +26,8 @@ public class EvriomentConst {
 	public static final String outEncoding = "outEncoding";
 	//需要生成代码的表，多个用","分割
 	public static final String tableNames = "tableNames";
+	// 设置公共字段
+	public static final String commonColumns = "commonColumns";
 	
 	//jdbc 配置
 	public static final String jdbcUrl = "jdbc.url";
