@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.ibm.codegen.EventMap;
 import com.ibm.codegen.EvriomentConst;
@@ -176,6 +174,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 			String[] tblNamesAry = tableNames.split(",");
 			String commonColumns = EventMap.getValue(EvriomentConst.commonColumns).toUpperCase();
 			List<String> commonColumnNameList = Arrays.asList(commonColumns.split(","));
+			String dateStr = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 			for(String tableName : tblNamesAry){
 				if(!TrimToArrayUtlils.isEmpty(tableName)){
 					Table  table = oracleParse.parseTable(DBSetting.getConnection(), tableName);
@@ -185,6 +184,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 					param.put("className", table.getClassName());
 					param.put("functionName", table.getClassName().toLowerCase());
 					param.put("table", table);
+					param.put("date", dateStr);
 					param.put("commonColumns", commonColumns);
 
 					// 处理公共字段

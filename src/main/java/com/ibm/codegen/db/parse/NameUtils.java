@@ -8,47 +8,44 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ibm.codegen.EventMap;
 import com.ibm.codegen.EvriomentConst;
 import com.ibm.codegen.util.IOUtils;
 
 public class NameUtils {
 	public static Map<String, String> tableNamePrefixMap = new HashMap<String, String>();
-	
+
+	// 是否初始化
+	private static boolean init = false;
+	// 生成类名时是否跳过模块名
 	private static boolean skipModuleName = false;
+	// 生成类名时是模块名称是否大写, skipModuleName=true 生效
+	private static boolean moduleNameUppperCase = false;
+
 	static{
 		tableNamePrefixMap.put("T_","");
 		tableNamePrefixMap.put("TB_","");
 		tableNamePrefixMap.put("MC_","");
 	}
-	
-	public static Map<String, String> loadTableNamePrex(String configfile){
-		Properties pros = new Properties();
-		FileInputStream fis = null;
-		File proFile = null;
-		try {
-			proFile = new File(configfile);
-			if(proFile.exists()){
-				fis = new FileInputStream(proFile);
-				pros.load(fis);
-				String tablePrefixStr =trimToEmpty(pros.get(EvriomentConst.tablePreFix));
-				String[] tablePrefixs = tablePrefixStr.split(";");
-				for(String tablePrefix : tablePrefixs){
-					if(!isEmpty(tablePrefix)){
-						tableNamePrefixMap.put(tablePrefix,"");
-					}
+
+
+	public static void init(){
+		if(!init){
+			String tablePrefixStr =trimToEmpty(EventMap.getValue(EvriomentConst.tablePreFix));
+			String[] tablePrefixs = tablePrefixStr.split(",");
+			for(String tablePrefix : tablePrefixs){
+				if(!isEmpty(tablePrefix)){
+					tableNamePrefixMap.put(tablePrefix,"");
 				}
-			}else{
-				throw new IllegalArgumentException("Config File:["+proFile.getAbsolutePath()+"] Not Found!");
 			}
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Config File:["+proFile.getAbsolutePath()+"] Not Found!");
-		}finally{
-			IOUtils.closeIOStream(fis);
+			skipModuleName = EventMap.getBoolean(EvriomentConst.skipModuleName);
+			moduleNameUppperCase = EventMap.getBoolean(EvriomentConst.moduleNameUppperCase);
+			init = true;
 		}
-		return tableNamePrefixMap;
 	}
 	
 	public static String getClassName(String tableName){
+		init();
 		String className = "";
 		String subTableName = tableName.toUpperCase();
 		//最多替换第二个下换线 如T_SYS_USER

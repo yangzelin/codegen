@@ -28,6 +28,10 @@ public class EvriomentConst {
 	public static final String tableNames = "tableNames";
 	// 设置公共字段
 	public static final String commonColumns = "commonColumns";
+	// 生成类名是是否跳过模块名，例如：TP_QA_QUESTION ，true 时为 QaQuestion, false时名称为 Question
+	public static final String skipModuleName = "skipModuleName";
+	// 生成类名是模块名大写，例如：TP_QA_QUESTION ，true 时为 QAQuestion, false时名称为 QaQuestion
+	public static final String moduleNameUppperCase = "moduleNameUppperCase";
 	
 	//jdbc 配置
 	public static final String jdbcUrl = "jdbc.url";

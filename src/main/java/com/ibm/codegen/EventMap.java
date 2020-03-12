@@ -50,6 +50,18 @@ public class EventMap {
 		}
 		eventMap.put(key, value);
 	}
+	public static boolean getBoolean(String key){
+		boolean retVal = getBoolean(key, false);
+		return retVal;
+	}
+	public static boolean getBoolean(String key, boolean defaultVal){
+		boolean retVal = defaultVal;
+		String val = getValue(key);
+		if(val != null){
+			retVal = val.trim().equalsIgnoreCase("true") || val.trim().equalsIgnoreCase("1");
+		}
+		return retVal;
+	}
 	public static String getValue(String key){
 		String val = getValue(key,"");
 		return val;
