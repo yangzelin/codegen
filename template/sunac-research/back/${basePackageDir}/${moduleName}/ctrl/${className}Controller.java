@@ -20,11 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import ${basePackage}.${moduleName}.domain.entity.${className};
-import ${basePackage}.${moduleName}.domain.vo.${className}DTO;
+import ${basePackage}.${moduleName}.domain.vo.${className}VO;
 import ${basePackage}.${moduleName}.domain.dto.${className}DTO;
 import ${basePackage}.${moduleName}.service.I${className}Service;
-import ${basePackage}.${moduleName}.wapper.I${className}Wrapper;
+import ${basePackage}.${moduleName}.wrapper.${className}Wrapper;
 
+import javax.validation.Valid;
 
 /**
  * 
@@ -79,10 +80,22 @@ public class ${className}Controller extends BaseController{
 	}
 
 	/**
+	 * 批量新增或修改
+	 */
+	@PostMapping("/submitBatch")
+	@ApiOperationSupport(order = 5)
+	@ApiOperation(value = "批量新增或修改", notes = "传入${classNameLower}List")
+	public R submitBatch(@Valid @RequestBody List<${className}> ${classNameLower}List, AuthUser user) {
+		// TODO批量校验数据
+		boolean result = ${classNameLower}Service.saveOrUpdateBatch(${classNameLower}List);
+		return R.status(result);
+	}
+
+	/**
 	 * 删除
 	 */
 	@PostMapping("/remove")
-	@ApiOperationSupport(order = 5)
+	@ApiOperationSupport(order = 6)
 	@ApiOperation(value = "删除", notes = "传入ids")
 	public R remove(@ApiParam(value = "主键集合", required = true) @RequestParam String ids) {
 		return R.status(${classNameLower}Service.removeByIds(Func.toIntList(ids)));
