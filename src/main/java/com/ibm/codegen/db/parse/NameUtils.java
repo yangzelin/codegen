@@ -143,6 +143,14 @@ public class NameUtils {
 		}
 		
 	}
+	public static String unapitalise(String str){
+		if(str ==null ||str.length()==0){
+			return str;
+		}else{
+			return str.substring(0,1).toLowerCase()+str.substring(1);
+		}
+
+	}
 	public static String getRightAppend(String source, String fillWord, int length){
 		StringBuffer sb = new StringBuffer(source);
 		int dataLen = source.length();

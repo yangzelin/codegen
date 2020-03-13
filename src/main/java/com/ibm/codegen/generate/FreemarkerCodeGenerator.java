@@ -12,6 +12,7 @@ import com.ibm.codegen.EvriomentConst;
 import com.ibm.codegen.db.DBSetting;
 import com.ibm.codegen.db.def.Column;
 import com.ibm.codegen.db.def.Table;
+import com.ibm.codegen.db.parse.NameUtils;
 import com.ibm.codegen.db.parse.Parse;
 import com.ibm.codegen.util.CopyTemplateUtils;
 import com.ibm.codegen.util.IOUtils;
@@ -186,6 +187,9 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 					param.put("table", table);
 					param.put("date", dateStr);
 					param.put("commonColumns", commonColumns);
+					// 新增类名大小写
+					param.put("className", table.getClassName().toLowerCase());
+					param.put("classNameLower", NameUtils.unapitalise(table.getClassName()));
 
 					// 处理公共字段
 					List<Column> columns =  table.getColumns();
