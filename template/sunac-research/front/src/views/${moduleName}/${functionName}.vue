@@ -1,6 +1,6 @@
 <template>
   <basic-container>
-    <h3>表格例子</h3>
+    <h3>${table.tableDesc?if_exists}</h3>
     <avue-crud :option="option"
                :page="page"
                :data="data"></avue-crud>
