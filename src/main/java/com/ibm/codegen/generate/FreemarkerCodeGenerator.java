@@ -1,13 +1,5 @@
 package com.ibm.codegen.generate;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.ibm.codegen.EventMap;
 import com.ibm.codegen.EvriomentConst;
 import com.ibm.codegen.db.DBSetting;
@@ -18,11 +10,16 @@ import com.ibm.codegen.db.parse.Parse;
 import com.ibm.codegen.util.CopyTemplateUtils;
 import com.ibm.codegen.util.IOUtils;
 import com.ibm.codegen.util.TrimToArrayUtlils;
-
-import com.mysql.jdbc.StringUtils;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class FreemarkerCodeGenerator implements CodeGenerator {
 	private Configuration cfg;
@@ -159,6 +156,14 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 	}
 
 
+	public boolean isNotEmpty(String str){
+		return str != null ? str.trim().length() > 0 : false;
+	}
+
+	public String trimToEmpty(String str){
+		return str != null ? str.trim() : "";
+	}
+
 	@Override
 	public File codeGen(String tplDir, String outDir, String encoding,
 			String tableNames, String dbUrl, String dbUserName,
@@ -171,7 +176,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 		DBSetting.dbPassword=dbPassword;
 		Parse oracleParse = DBSetting.getDefualtParse();
 		try {
-			if(StringUtils.isNullOrEmpty(tableNames)){
+			if(isNotEmpty(tableNames)){
 				List<String> tableNameList = oracleParse.getAllTable(DBSetting.getConnection());
 				StringBuffer tableNameBuf = new StringBuffer(64);
 				for (String tableName : tableNameList) {
