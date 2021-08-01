@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.ibm.codegen.EventMap;
 import com.ibm.codegen.EvriomentConst;
@@ -18,6 +19,7 @@ import com.ibm.codegen.util.CopyTemplateUtils;
 import com.ibm.codegen.util.IOUtils;
 import com.ibm.codegen.util.TrimToArrayUtlils;
 
+import com.mysql.jdbc.StringUtils;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -25,9 +27,9 @@ import freemarker.template.Template;
 public class FreemarkerCodeGenerator implements CodeGenerator {
 	private Configuration cfg;
 	private String tplDir;
-	
+
 	public static void main(String[] args) {
-		
+
 		try {
 //			Configuration  cfg = new Configuration();
 //			cfg.setDirectoryForTemplateLoading(new File("template/freemark"));
@@ -45,10 +47,10 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	
+
 	@Override
 	public File codegen(String outDir,String encoding,
 			Map param) {
@@ -57,8 +59,8 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 		String basePackageDir = basePackage.replaceAll("\\.", "/");
 		param.put(EvriomentConst.basePackageDir, basePackageDir);
 		codegen(tplDir,outDir,encoding,param);
-		
-		
+
+
 		File outDirFile = new File(outDir);
 		return outDirFile;
 	}
@@ -76,10 +78,10 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 				System.out.println("Gen Code--->:"+codeFile.getAbsolutePath());
 			}
 		}
-		
+
 		return tplFile;
 	}
-	
+
 
 	protected File codgen(File tplFile, String outDir,String encoding, Map param) {
 		//模版文件输出文件相对路径
@@ -94,7 +96,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 		if(pFile != null && !pFile.exists()){
 			pFile.mkdirs();
 		}
-		
+
 		//获取Freemarker 模版文件
 		Template t = getFreemarketTemplate(tplFileRelativePath, cfg);
 		OutputStreamWriter osw = null;
@@ -113,7 +115,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 		}
 		return outFile;
 	}
-	
+
 	private Template getFreemarketTemplate(String templateFile,Configuration cfg ){
 		try {
 			Template t = cfg.getTemplate(templateFile);
@@ -168,9 +170,21 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 		DBSetting.dbUserName=dbUserName;
 		DBSetting.dbPassword=dbPassword;
 		Parse oracleParse = DBSetting.getDefualtParse();
-		
+		try {
+			if(StringUtils.isNullOrEmpty(tableNames)){
+				List<String> tableNameList = oracleParse.getAllTable(DBSetting.getConnection());
+				StringBuffer tableNameBuf = new StringBuffer(64);
+				for (String tableName : tableNameList) {
+					tableNameBuf.append(tableName).append(",");
+				}
+				tableNames = tableNameBuf.toString();
+			}
+		} catch (SQLException e) {
+			throw new IllegalArgumentException("表名为空，获取全部表名为空！error"+e.getMessage());
+		}
 		File codeOuptDir = null;
 		try {
+
 			//获取表名列表
 			String[] tblNamesAry = tableNames.split(",");
 			String commonColumns = EventMap.getValue(EvriomentConst.commonColumns).toUpperCase();
@@ -188,7 +202,7 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 					param.put("date", dateStr);
 					param.put("commonColumns", commonColumns);
 					// 新增类名大小写
-					param.put("className", table.getClassName().toLowerCase());
+//					param.put("className", table.getClassName().toLowerCase());
 					param.put("classNameLower", NameUtils.unapitalise(table.getClassName()));
 
 					// 处理公共字段
@@ -198,7 +212,12 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 							col.setCommonColumn(true);
 						}
 					}
-					
+
+					// 处理字段描述中换行符号
+					for (Column col : columns) {
+						col.setColumnComment(replaceNewlineCharacter(col.getColumnComment()));
+					}
+
 					FreemarkerCodeGenerator  freemarkGen = new FreemarkerCodeGenerator();
 					freemarkGen.setTemplateDir(tplDir);
 					codeOuptDir = freemarkGen.codegen(outDir, encoding, param);
@@ -210,5 +229,10 @@ public class FreemarkerCodeGenerator implements CodeGenerator {
 		}
 		return codeOuptDir;
 	}
-	
+
+
+	private static String replaceNewlineCharacter(String str){
+		String ret = str != null ? str.replaceAll("\\r","") : "";
+		return ret;
+	}
 }

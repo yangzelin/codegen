@@ -1,0 +1,134 @@
+<#assign className ="${table.className}">
+<#assign classNameLower = className?uncap_first>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.venus.bill.pay.infrastructure.mapper.${className}Mapper">
+    <!-- 根据ID查询${className}对象 -->
+    <select id="getById" resultType="${basePackage}.${moduleName}.infrastructure.dataobject.${className}DO" >
+        select
+        <trim suffixOverrides=",">
+            <#list table.columns as column>
+            ${column.columnName?lower_case} as ${column.propertyName},
+            </#list>
+        </trim>
+        from ${table.tableName?lower_case}
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="id != null">
+                and id=${r"#{id}"}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 根据map查询${className} List -->
+    <select id="getByMap" resultType="${basePackage}.${moduleName}.infrastructure.dataobject.${className}DO" parameterType="java.util.Map">
+        select
+        <trim suffixOverrides=",">
+            <#list table.columns as column>
+            ${column.columnName?lower_case} as ${column.propertyName},
+            </#list>
+        </trim>
+        from ${table.tableName?lower_case}
+        <trim prefix="where" prefixOverrides="and | or">
+        <#list table.columns as column>
+                <if test="${column.propertyName} != null and ${column.propertyName}!=''">
+                    and ${column.columnName?lower_case}=${r"#{"}${column.propertyName}}
+                </if>
+        </#list>
+        </trim>
+    </select>
+
+    <!-- 根据map查询${className} 总数 -->
+    <select id="getCountByMap" resultType="Integer"  parameterType="java.util.Map">
+        select count(*) from  ${table.tableName?lower_case}
+        <trim prefix="where" prefixOverrides="and | or">
+        <#list table.columns as column>
+            <if test="${column.propertyName} != null and ${column.propertyName}!=''">
+                and ${column.columnName?lower_case}=${r"#{"}${column.propertyName}}
+            </if>
+        </#list>
+        </trim>
+    </select>
+
+    <!-- 新建${className}对象 -->
+    <insert id="insert" parameterType="${basePackage}.${moduleName}.infrastructure.dataobject.${className}DO">
+        insert into ${table.tableName?lower_case}(
+        <trim suffixOverrides=",">
+            <#list table.columns as column>
+            ${column.columnName?lower_case},
+        </#list>
+        </trim>
+        )
+        values(
+        <trim suffixOverrides=",">
+        <#list table.columns as column>
+            ${column.propertyName},
+        </#list>
+        </trim>
+        )
+    </insert>
+
+    <!-- 更新${className}对象 -->
+    <update id="update" parameterType="${basePackage}.${moduleName}.infrastructure.dataobject.${className}DO">
+        update ${table.tableName?lower_case}
+        <trim prefix="set" suffixOverrides="," suffix="where id=${r"#{id}"}">
+            <#list table.columns as column>
+                    <if test="${column.propertyName} != null">
+                        ${column.columnName?lower_case}=${r"#{"}${column.propertyName}},
+                    </if>
+            </#list>
+        </trim>
+    </update>
+
+    <!-- 根据ID物理删除${className}对象 -->
+    <delete id="deleteById" parameterType="Long">
+        delete from ${table.tableName?lower_case} where id = ${r"#{id}"}
+    </delete>
+
+    <!-- 批量新建${className}对象 -->
+    <insert id="insertBatch">
+        insert into ${table.tableName?lower_case} (
+        <trim suffixOverrides=",">
+            <#list table.columns as column>
+            <#if !column.pk>
+            ${column.columnName?lower_case},
+            </#if>
+            </#list>
+        </trim>
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+            <trim suffixOverrides=",">
+            <#list table.columns as column>
+            <#if !column.pk>
+                ${r'#{item.'}${column.columnName?lower_case}},
+            </#if>
+            </#list>
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <!-- 批量更新${className}对象 -->
+    <update id="updateBatch"  parameterType="java.util.List">
+        <foreach close="" collection="list" index="index" item="item" open="" separator=";">
+            update ${table.tableName?lower_case}
+            <trim prefix="set" suffixOverrides="," suffix="where id=${r"#{item.id}"}">
+                <#list table.columns as column>
+                <#if !column.pk>
+                <if test="item.busiKey != null">
+                    ${column.columnName?lower_case}=${r"#{item."}${column.propertyName}},
+                </if>
+                </#if>
+                </#list>
+            </trim>
+        </foreach>
+    </update>
+
+    <!-- 批量逻辑删除 -->
+    <update id="removeByIds">
+        update ${table.tableName?lower_case} set is_deleted=1,update_time=sysdate()  where id in <foreach collection="list" item="id" open="(" separator="," close=")"> ${r"#{id}"}</foreach>
+    </update>
+</mapper>

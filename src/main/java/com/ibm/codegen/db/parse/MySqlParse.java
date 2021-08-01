@@ -19,6 +19,47 @@ import com.ibm.codegen.util.IOUtils;
 
 public class MySqlParse implements Parse {
 
+	/**
+	 * <p>
+	 * Description:根据表名获取 表名备注
+	 * </p>
+	 *
+	 * @param conn
+	 * @param tableName
+	 * @return
+	 * @auhtor Administrator
+	 * @date 2016年10月5日
+	 */
+	@Override
+	public String getTableComments(Connection conn, String tableName) {
+		return null;
+	}
+
+	/**
+	 * <p>Description:  获取所有的表名<p>
+	 *
+	 * @param conn
+	 * @return
+	 * @auth 杨泽林
+	 * @date 2015-1-7 上午11:32:58
+	 * @version 1.0
+	 */
+	@Override
+	public List<String> getAllTable(Connection conn) {
+		List<String> tableNames = new ArrayList<String>();
+		try {
+			DatabaseMetaData dbmd = conn.getMetaData();
+			ResultSet resultSet = dbmd.getTables(null, null, null, new String[]{"TABLE"});
+			while (resultSet.next()) {
+				String tableName = resultSet.getString("TABLE_NAME");
+				tableNames.add(tableName);
+			}
+		} catch (SQLException e) {
+			throw new IllegalArgumentException("getALLTable error:"+e.getMessage());
+		}
+		return tableNames;
+	}
+
 	@Override
 	public Table parseTable(Connection conn, String tableName) {
 		Table table = new Table();
@@ -37,10 +78,10 @@ public class MySqlParse implements Parse {
 //					String tableName = md.getTableName(i);
 //					String columClazzName = md.getColumnClassName(i);
 					Object value = databaseMetaResultSet.getObject(i);
-					
-					
+
+
 					if("TABLE_SCHEM".equals(columnName)){
-						
+
 					}else if("TABLE_NAME".equals(columnName)){
 						column.setTableName(value.toString());
 					}else if("COLUMN_NAME".equals(columnName)){
@@ -54,12 +95,12 @@ public class MySqlParse implements Parse {
 					}else if("COLUMN_SIZE".equals(columnName)){
 						column.setColumnSize(new BigDecimal(value.toString()));
 					}
-					
+
 //					column.setColumnClass(columClazzName);
 				}
 				//字段数据库类型
 				String type = column.getColumnType();
-				if(type!= null && !type.startsWith("DATE") 
+				if(type!= null && !type.startsWith("DATE")
 						&&column.getColumnSize() != null && !column.getColumnSize().equals(0) ){
 					type = type+"("+column.getColumnSize()+")";
 				}
@@ -69,7 +110,7 @@ public class MySqlParse implements Parse {
 				//字段Java类型
 				String columnJavaType = getColumnJavaType(column);
 				column.setColumnClass(columnJavaType);
-				
+
 				//设置主键字段
 				if(column.isPk()){
 					table.getPkColumns().add(column);
@@ -81,7 +122,7 @@ public class MySqlParse implements Parse {
 			throw new IllegalArgumentException("parse Table:["+tableName+"] error:"+e.getMessage());
 		}
 
-		
+
 		return table;
 	}
 
@@ -126,7 +167,7 @@ public class MySqlParse implements Parse {
 			IOUtils.release(rs);
 			IOUtils.release(ps);
 		}
-		
+
 		return map;
 	}
 
@@ -148,21 +189,17 @@ public class MySqlParse implements Parse {
 		String columnTypeName = column.getColumnTypeName();
 		BigDecimal columnSize= column.getColumnSize();
 		if(columnTypeName.toUpperCase().startsWith("VARCHAR")){
-			
+
 		}else if(columnTypeName.toUpperCase().startsWith("NUMBER")||columnTypeName.toUpperCase().startsWith("INT")||columnTypeName.toUpperCase().startsWith("BIGINT")){
 			javaType = Long.class.getName();
-			
+
 		}else if(columnTypeName.toUpperCase().startsWith("DATE")||columnTypeName.toUpperCase().startsWith("TIME")){
 			javaType = Date.class.getName();
 		}
-		
+
 		return javaType;
 	}
 
-	@Override
-	public String getTableComments(Connection conn, String tableName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }

@@ -19,6 +19,31 @@ import com.ibm.codegen.util.IOUtils;
 
 public class OracleParse implements Parse {
 
+	/**
+	 * <p>Description:  获取所有的表名<p>
+	 *
+	 * @param conn
+	 * @return
+	 * @auth 杨泽林
+	 * @date 2015-1-7 上午11:32:58
+	 * @version 1.0
+	 */
+	@Override
+	public List<String> getAllTable(Connection conn) {
+		List<String> tableNames = new ArrayList<String>();
+		try {
+			DatabaseMetaData dbmd = conn.getMetaData();
+			ResultSet resultSet = dbmd.getTables(null, null, null, new String[]{"TABLE"});
+			while (resultSet.next()) {
+				String tableName = resultSet.getString("TABLE_NAME");
+				tableNames.add(tableName);
+			}
+		} catch (SQLException e) {
+			throw new IllegalArgumentException("getALLTable error:"+e.getMessage());
+		}
+		return tableNames;
+	}
+
 	@Override
 	public Table parseTable(Connection conn, String tableName) {
 		Table table = new Table();
@@ -39,9 +64,9 @@ public class OracleParse implements Parse {
 //					String tableName = md.getTableName(i);
 //					String columClazzName = md.getColumnClassName(i);
 					Object value = databaseMetaResultSet.getObject(i);
-					
+
 					if("TABLE_SCHEM".equals(columnName)){
-						
+
 					}else if("TABLE_NAME".equals(columnName)){
 						column.setTableName(value.toString());
 					}else if("COLUMN_NAME".equals(columnName)){
@@ -55,12 +80,12 @@ public class OracleParse implements Parse {
 					}else if("COLUMN_SIZE".equals(columnName)){
 						column.setColumnSize((BigDecimal) value);
 					}
-					
+
 //					column.setColumnClass(columClazzName);
 				}
 				//字段数据库类型
 				String type = column.getColumnType();
-				if(type!= null && !type.startsWith("DATE") 
+				if(type!= null && !type.startsWith("DATE")
 						&&column.getColumnSize() != null && !column.getColumnSize().equals(0) ){
 					type = type+"("+column.getColumnSize()+")";
 				}
@@ -70,7 +95,7 @@ public class OracleParse implements Parse {
 				//字段Java类型
 				String columnJavaType = getColumnJavaType(column);
 				column.setColumnClass(columnJavaType);
-				
+
 				//设置主键字段
 				if(column.isPk()){
 					table.getPkColumns().add(column);
@@ -81,26 +106,26 @@ public class OracleParse implements Parse {
 		} catch (SQLException e) {
 			throw new IllegalArgumentException("parse Table:["+tableName+"] error:"+e.getMessage());
 		}
-		
+
 		return table;
 	}
-	
+
 	public String getColumnJavaType(Column column){
 		String javaType = String.class.getName();
 		String columnTypeName = column.getColumnTypeName();
 		BigDecimal columnSize= column.getColumnSize();
 		if(columnTypeName.toUpperCase().startsWith("VARCHAR")){
-			
+
 		}else if(columnTypeName.toUpperCase().startsWith("NUMBER")){
 			javaType = Long.class.getName();
-			
+
 		}else if(columnTypeName.toUpperCase().startsWith("DATE")||columnTypeName.toUpperCase().startsWith("TIME")){
 			javaType = Date.class.getName();
 		}
-		
+
 		return javaType;
 	}
-	
+
 	public Map<String,String> getColumnComment(Connection conn,String tableName){
 		Map<String,String> map = new HashMap<String, String>();
 		String sql = "SELECT t1.COLUMN_NAME, t2.COMMENTS"+
@@ -124,10 +149,10 @@ public class OracleParse implements Parse {
 			IOUtils.release(rs);
 			IOUtils.release(ps);
 		}
-		
+
 		return map;
 	}
-	
+
 	public String getTableComments(Connection conn,String tableName){
 		String tableComments = "";
 		String sql = "SELECT TABLE_NAME,TABLE_TYPE,COMMENTS"+
@@ -148,10 +173,10 @@ public class OracleParse implements Parse {
 			IOUtils.release(rs);
 			IOUtils.release(ps);
 		}
-		
+
 		return tableComments;
 	}
-	
+
 	public ResultSet getTableColumnResultSet(Connection conn,String tableName){
 		ResultSet rs = null;
 		try {
@@ -167,7 +192,7 @@ public class OracleParse implements Parse {
 		}
 		return rs;
 	}
-	
+
 //	public String getTableComments2(Connection conn,String tableName){
 //		String tableCommenets = null;
 //		ResultSet rs = null;
@@ -177,7 +202,7 @@ public class OracleParse implements Parse {
 //			rs = databaseMetaData.getTables(conn.getCatalog(), conn.getMetaData().getUserName().toUpperCase(), tableName.toUpperCase(),new String[]{"TABLE","REMARKS"});
 //			int columnSize = rs.getMetaData().getColumnCount();
 //			while(rs.next()){
-//				
+//
 //				for(int i =1; i<=columnSize; i++)
 //				System.out.println(rs.getMetaData().getColumnName(i)+":"+rs.getString(i));
 //			}
@@ -196,7 +221,7 @@ public class OracleParse implements Parse {
 		String pkConstraintName = "";
 		tableName = tableName != null ? tableName.trim().toUpperCase() : "";
 		String sql = "select t.owner,t.constraint_name,t.column_name  from user_cons_columns t where constraint_name = (select constraint_name from user_constraints where table_name = '"+tableName+"' and constraint_type = 'P')";
-		
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
